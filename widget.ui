@@ -6,40 +6,38 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>344</width>
-    <height>190</height>
+    <width>454</width>
+    <height>282</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QPushButton" name="but_port">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>80</y>
-     <width>181</width>
-     <height>22</height>
+     <x>40</x>
+     <y>40</y>
+     <width>75</width>
+     <height>23</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>串口名：</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="comboBox"/>
-    </item>
-   </layout>
+   <property name="text">
+    <string>串口</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>40</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>键盘、鼠标</string>
+   </property>
   </widget>
  </widget>
  <resources/>

@@ -15,13 +15,19 @@ CONFIG += c++11
 SOURCES += \
     comchange.cpp \
     main.cpp \
+    mousekeytest.cpp \
+    porttest.cpp \
     widget.cpp
 
 HEADERS += \
     comchange.h \
+    mousekeytest.h \
+    porttest.h \
     widget.h
 
 FORMS += \
+    mousekeytest.ui \
+    porttest.ui \
     widget.ui
 
 # Default rules for deployment.

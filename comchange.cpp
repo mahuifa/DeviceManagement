@@ -53,11 +53,13 @@ void ComChange::setHWND(HWND hwnd)
 ComChange::ComChange(QObject *parent) : QObject(parent)
 {
     qApp->installNativeEventFilter(this);        // 安装事件过滤器
+
 }
 
 bool ComChange::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 {
     MSG* msg = reinterpret_cast<MSG*>(message);
+
     if(msg->message == WM_DEVICECHANGE               // 通知应用程序设备或计算机的硬件配置发生更改。
       && msg->hwnd == this->m_hwnd)                  // 过滤事件
     {

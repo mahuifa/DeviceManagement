@@ -2,6 +2,8 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include "porttest.h"
+#include "mousekeytest.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -15,12 +17,15 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
-protected:
-    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
-    void on_comStatus(QString name, bool flag);
+private slots:
+    void on_but_port_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::Widget *ui;
+    PortTest* m_port = nullptr;
+    MouseKeyTest* m_mouseKey = nullptr;
 };
 #endif // WIDGET_H
