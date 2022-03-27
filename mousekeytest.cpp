@@ -1,7 +1,10 @@
+﻿#pragma execution_character_set("utf-8")
 #include "mousekeytest.h"
 #include "ui_mousekeytest.h"
 
 #include <qdebug.h>
+
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include "dbt.h"
 #include "initguid.h"
@@ -9,6 +12,9 @@
 #include "hidclass.h"
 #include "ntddkbd.h"
 #include "ntddmou.h"
+#pragma comment(lib, "user32.lib")
+#endif
+
 
 MouseKeyTest::MouseKeyTest(QWidget *parent) :
     QWidget(parent),
@@ -30,6 +36,7 @@ MouseKeyTest::~MouseKeyTest()
  */
 void MouseKeyTest::registerGUID()
 {
+#ifdef Q_OS_WIN
     DEV_BROADCAST_DEVICEINTERFACE mouseInterface;
     ZeroMemory(&mouseInterface, sizeof(DEV_BROADCAST_DEVICEINTERFACE));
     mouseInterface.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
@@ -49,6 +56,7 @@ void MouseKeyTest::registerGUID()
     {
         qDebug() << "键盘GUID注册失败";
     }
+#endif
 }
 
 /**
@@ -60,47 +68,52 @@ void MouseKeyTest::registerGUID()
  */
 bool MouseKeyTest::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
-    MSG* msg = reinterpret_cast<MSG*>(message);
-    if(msg->message == WM_DEVICECHANGE)                // 通知应用程序设备或计算机的硬件配置发生更改。
+#ifdef Q_OS_WIN
+    if(eventType == "windows_generic_MSG")
     {
-        PDEV_BROADCAST_HDR lpdb = (PDEV_BROADCAST_HDR)msg->lParam;
-        PDEV_BROADCAST_DEVICEINTERFACE lpdbv = (PDEV_BROADCAST_DEVICEINTERFACE)lpdb;
-        switch (msg->wParam)
+        MSG* msg = reinterpret_cast<MSG*>(message);
+        if(msg->message == WM_DEVICECHANGE)                // 通知应用程序设备或计算机的硬件配置发生更改。
         {
-        case DBT_DEVICEARRIVAL:             // 插入
-        {
-            if(lpdb->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
+            PDEV_BROADCAST_HDR lpdb = (PDEV_BROADCAST_HDR)msg->lParam;
+            PDEV_BROADCAST_DEVICEINTERFACE lpdbv = (PDEV_BROADCAST_DEVICEINTERFACE)lpdb;
+            switch (msg->wParam)
             {
-                if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_KEYBOARD)
-                {
-                    ui->textEdit->append("键盘插入：" + QString::fromWCharArray(lpdbv->dbcc_name));
-                }
-                else if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_MOUSE)
-                {
-                    ui->textEdit->append("鼠标插入：" + QString::fromWCharArray(lpdbv->dbcc_name));
-                }
-            }
-            break;
-        }
-        case DBT_DEVICEREMOVECOMPLETE:      // 拔出
-        {
-            if(lpdb->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
+            case DBT_DEVICEARRIVAL:             // 插入
             {
-                if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_KEYBOARD)
+                if(lpdb->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
                 {
-                    ui->textEdit->append("键盘移除：" + QString::fromWCharArray(lpdbv->dbcc_name));
+                    if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_KEYBOARD)
+                    {
+                        ui->textEdit->append("键盘插入：" + QString::fromWCharArray(lpdbv->dbcc_name));
+                    }
+                    else if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_MOUSE)
+                    {
+                        ui->textEdit->append("鼠标插入：" + QString::fromWCharArray(lpdbv->dbcc_name));
+                    }
                 }
-                else if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_MOUSE)
-                {
-                    ui->textEdit->append("鼠标移除：" + QString::fromWCharArray(lpdbv->dbcc_name));
-                }
+                break;
             }
-            break;
-        }
-        default:
-            break;
+            case DBT_DEVICEREMOVECOMPLETE:      // 拔出
+            {
+                if(lpdb->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
+                {
+                    if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_KEYBOARD)
+                    {
+                        ui->textEdit->append("键盘移除：" + QString::fromWCharArray(lpdbv->dbcc_name));
+                    }
+                    else if(lpdbv->dbcc_classguid == GUID_DEVINTERFACE_MOUSE)
+                    {
+                        ui->textEdit->append("鼠标移除：" + QString::fromWCharArray(lpdbv->dbcc_name));
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+            }
         }
     }
 
+#endif
     return false;
 }

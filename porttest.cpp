@@ -1,9 +1,14 @@
+﻿#pragma execution_character_set("utf-8")
 #include "porttest.h"
 #include "ui_porttest.h"
 #include <qdebug.h>
+#include "comchange.h"
+
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include "dbt.h"
-#include "comchange.h"
+#pragma comment(lib, "user32.lib")
+#endif
 
 PortTest::PortTest(QWidget *parent) :
     QWidget(parent),
@@ -55,37 +60,41 @@ void PortTest::on_comStatus(QString name, bool flag)
  */
 bool PortTest::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
-    MSG* msg = reinterpret_cast<MSG*>(message);
-    if(msg->message == WM_DEVICECHANGE)                // 通知应用程序设备或计算机的硬件配置发生更改。
+#ifdef Q_OS_WIN
+    if(eventType == "windows_generic_MSG")
     {
-        PDEV_BROADCAST_HDR lpdb = (PDEV_BROADCAST_HDR)msg->lParam;
-        qDebug() << msg->wParam;
-        switch (msg->wParam)
+        MSG* msg = reinterpret_cast<MSG*>(message);
+        if(msg->message == WM_DEVICECHANGE)                // 通知应用程序设备或计算机的硬件配置发生更改。
         {
-        case DBT_DEVICEARRIVAL:             // 插入
-        {
-            if (lpdb->dbch_devicetype == DBT_DEVTYP_PORT)           // 设备类型为串口
+            PDEV_BROADCAST_HDR lpdb = (PDEV_BROADCAST_HDR)msg->lParam;
+            switch (msg->wParam)
             {
-                PDEV_BROADCAST_PORT lpdbv = (PDEV_BROADCAST_PORT)lpdb;
-                QString strName = QString::fromWCharArray(lpdbv->dbcp_name);  //插入的串口名
-                qDebug() << strName;
-            }
-            break;
-        }
-        case DBT_DEVICEREMOVECOMPLETE:      // 拔出
-        {
-            if (lpdb->dbch_devicetype == DBT_DEVTYP_PORT)           // 设备类型为串口
+            case DBT_DEVICEARRIVAL:             // 插入
             {
-                PDEV_BROADCAST_PORT lpdbv = (PDEV_BROADCAST_PORT)lpdb;
-                QString strName = QString::fromWCharArray(lpdbv->dbcp_name);  //拔出的串口名
-                qDebug() << strName;
+                if (lpdb->dbch_devicetype == DBT_DEVTYP_PORT)           // 设备类型为串口
+                {
+                    PDEV_BROADCAST_PORT lpdbv = (PDEV_BROADCAST_PORT)lpdb;
+                    QString strName = QString::fromWCharArray(lpdbv->dbcp_name);  //插入的串口名
+                    qDebug() << strName;
+                }
+                break;
             }
-            break;
-        }
-        default:
-            break;
+            case DBT_DEVICEREMOVECOMPLETE:      // 拔出
+            {
+                if (lpdb->dbch_devicetype == DBT_DEVTYP_PORT)           // 设备类型为串口
+                {
+                    PDEV_BROADCAST_PORT lpdbv = (PDEV_BROADCAST_PORT)lpdb;
+                    QString strName = QString::fromWCharArray(lpdbv->dbcp_name);  //拔出的串口名
+                    qDebug() << strName;
+                }
+                break;
+            }
+            default:
+                break;
+            }
         }
     }
+#endif
 
     return false;
 }

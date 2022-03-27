@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * @文件名       mousekeytest.h
  * @功能        鼠标、键盘热插拔监测
  *
@@ -26,6 +26,7 @@ public:
 private:
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
     void registerGUID();
+
 private:
     Ui::MouseKeyTest *ui;
 };

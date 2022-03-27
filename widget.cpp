@@ -1,3 +1,4 @@
+﻿#pragma execution_character_set("utf-8")
 #include "widget.h"
 #include "ui_widget.h"
 #include <QDebug>
@@ -9,6 +10,7 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->setWindowTitle("串口、鼠标、键盘热插拔监测demo");
     m_port = new PortTest();
     m_mouseKey = new MouseKeyTest();
 }
